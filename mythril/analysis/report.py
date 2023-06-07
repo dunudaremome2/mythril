@@ -17,6 +17,8 @@ from mythril.support.support_utils import get_code_hash
 from mythril.support.signatures import SignatureDB
 from time import time
 
+from mythril.extract.extract import ExtractInfo
+
 log = logging.getLogger(__name__)
 
 
@@ -292,6 +294,19 @@ class Report:
         template = Report.environment.get_template("report_as_text.jinja2")
 
         return template.render(filename=name, issues=self.sorted_issues())
+    
+    def as_customised(self):
+        """
+
+        :return:
+        """
+        name = self._file_name()
+        
+        template = Report.environment.get_template("report_as_customised.jinja2")
+        
+        ex = ExtractInfo()
+
+        return template.render(filename=name, issues=ex.check_vuln(self.sorted_issues()))
 
     def as_json(self):
         """

@@ -1,0 +1,35 @@
+{% if issues %}
+{% for issue in issues %}
+Severity Level: {{ issue.severity_level }}
+SWC ID: {{ issue.swcid }}
+Vulnerability: {{ issue.title }}
+Reason: {{ issue.reason }}
+
+Function: {{ issue.function_name }}
+Source in code: {{ issue.function_line[0] }} - {{ issue.function_line[1] }}
+
+{{ issue.additional }}:
+
+{% set cnt = 0 %}
+{% set remaining = (issue.items()|list())[7:] %}
+{% for key, value in remaining %}
+{% if key in ['excall', 'var_written'] %}
+{% if cnt == 0 %}
+{{ value }}:
+{% else %}
+{{ value }}
+{% endif %}
+{% set cnt = cnt + 1 %}
+{% else %}
+{% if 'name' in key %}
+- {{ value -}}
+{% endif %}
+{% if 'line' in key %}
+  (Line {{ value }})
+{% endif %}
+{% endif %}
+{% endfor %}
+=========================================================================================================================================================================================
+{% endfor %}
+{% endif %}
+
