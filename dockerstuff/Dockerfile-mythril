@@ -1,0 +1,33 @@
+# Install python image
+FROM python:3.10.11
+
+# Set the working directory
+WORKDIR /mythril
+
+# Install the necessary dependencies for Mythril
+RUN apt-get update && \
+    apt-get install -y libssl-dev build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Rust
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install nightly Rust toolchain
+RUN rustup toolchain install nightly && \
+    rustup default nightly
+
+# Copy the wheel file into the Docker image
+COPY mythril-0.23.11-py3-none-any.whl /tmp/
+
+# Install the wheel file using pip
+RUN pip install /tmp/mythril-0.23.11-py3-none-any.whl
+
+# Install solc-select
+RUN pip install solc-select
+
+# Install default solc versions
+RUN solc-select install 0.4.26
+
+# Set default solc version
+RUN solc-select use 0.4.26
